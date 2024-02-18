@@ -66,7 +66,6 @@ public class ImageSelector {
         }
     }
 
-
     public void getImageSinceFolder(){
         ArrayList<byte[]> bytesImagesArray = new ArrayList<>();
         File folder = new File(PATH);
