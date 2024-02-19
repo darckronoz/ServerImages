@@ -22,9 +22,4 @@ public class ServerView {
             return 55555;
         }
     }
-
-    public Object getInitBtn() {
-        return frame.getInitBtn();
-    }
-
 }

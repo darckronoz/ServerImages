@@ -11,35 +11,23 @@ public class ImageSelector {
     public static final String USER_PROPERTY = "user.home";
     public static final String PATH = "C:\\Users\\Andres\\IdeaProjects\\ServerImagenes\\src\\main\\java\\models\\storagee";
     public static final String JPG = "jpg";
-    public static final String CORRECT_SAVE_MESSAGE = "Imagen guardada correctamente en: ";
     public static final String PATH_DOWNLOAD_IMAGES = "C:\\Users\\Andres\\IdeaProjects\\ServerImagenes\\src\\main\\java\\models\\downloadImages";
     public static final String CORRECT_SAVE_MESSAGEXD = "Imagen guardada correctamente en: ";
     public static final String IMAGE = "imagen";
     public static final String JPEG = ".jpeg";
 
-    public BufferedImage selectImage() {
+    public byte[] selectImage() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty(USER_PROPERTY)));
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             try {
-                return ImageIO.read(fileChooser.getSelectedFile());
+                return convertImageToByteArray(ImageIO.read(fileChooser.getSelectedFile()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         return null;
-    }
-
-    public void saveImage(String fileName) {
-        try {
-            File directorio = new File(PATH);
-            File archivoSalida = new File(directorio, fileName);
-            ImageIO.write(selectImage(), JPG, archivoSalida);
-            System.out.println(CORRECT_SAVE_MESSAGE + archivoSalida.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public BufferedImage convertBytesToImage(byte[] bytesDeImagen) {
@@ -52,6 +40,14 @@ public class ImageSelector {
             e.printStackTrace();
             return null;
         }
+    }
+    private static byte[] convertImageToByteArray(BufferedImage image) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", baos);
+        baos.flush();
+        byte[] imageBytes = baos.toByteArray();
+        baos.close();
+        return imageBytes;
     }
 
     public void downloadImages(BufferedImage imagen, String nombreArchivo) {

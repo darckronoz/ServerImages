@@ -18,9 +18,8 @@ public class ServerController {
     }
     public void initServer(int port) {
         try {
-            new Thread(() -> {
-                new Server(port);
-            });
+            Thread serverThread = new Thread(() -> new Server(port));
+            serverThread.start();
         }catch (Exception ex) {
             System.err.println("Error al iniciar el servidor: " + ex.getMessage());
         }

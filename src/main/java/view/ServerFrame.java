@@ -15,7 +15,7 @@ public class ServerFrame extends JFrame {
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
-        JLabel label = new JLabel("Puerto:");
+        JLabel label = new JLabel("Puerto:         ");
         panel.add(label);
 
         portTxt = new JTextField(20);
@@ -30,7 +30,4 @@ public class ServerFrame extends JFrame {
         this.initBtn.addActionListener(actionListener);
     }
 
-    public JButton getInitBtn() {
-        return initBtn;
-    }
 }

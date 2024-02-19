@@ -1,63 +1,61 @@
 package models;
 
-import javax.swing.*;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Client {
-
-    private static final String IPADDRES = "localhost";
-
-    private static final int PORT = 5555;
-    public static final String SELECT_IMAGE_OPTION = "Elija una imagen rey";
-    public static final String NAME_FOR_FILE_MESSAGE = "Nombre para el archivo";
-    public static final String JPEG = ".jpeg";
-    public static final String DOWNLOAD_MESSAGE_OPTION = "Descargue esa vuelta";
+    private static final String IPADDRESS = "localhost";
+    private static final int PORT = 55555;
     public static final String ERROR_MESSAGE = "F";
-
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
-
+    private final InputStream inputStream;
+    private final OutputStream outputStream;
     private Scanner scanner;
-
-    private Socket socket;
-
     private ImageSelector imageSelector;
 
     public Client() {
         try {
             this.imageSelector = new ImageSelector();
             this.scanner = new Scanner(System.in);
-            this.socket = new Socket(IPADDRES,PORT);
-            this.inputStream = new DataInputStream(socket.getInputStream());
-            this.outputStream = new DataOutputStream(socket.getOutputStream());
-
-            String message = inputStream.readUTF();
-            System.out.println(message);
-
-            outputStream.writeUTF(scanner.nextLine());
-
-            String messageOptionn = inputStream.readUTF();
-            if (messageOptionn.equals(SELECT_IMAGE_OPTION)){
-                imageSelector.saveImage(JOptionPane.showInputDialog(NAME_FOR_FILE_MESSAGE) + JPEG);
-            } else if (messageOptionn.equals(DOWNLOAD_MESSAGE_OPTION)) {
-                imageSelector.getImageSinceFolder();
-            }else {
-                System.out.println(ERROR_MESSAGE);
+            Socket socket = new Socket(IPADDRESS, PORT);
+            this.inputStream = socket.getInputStream();
+            this.outputStream = socket.getOutputStream();
+            int request = scanner.nextByte();
+            outputStream.write(request);
+            switch (request) {
+                case 1:
+                    saveImage();
+                    break;
+                case 2:
+                    getImages();
+                    break;
+                default:
+                    System.out.println(ERROR_MESSAGE);
             }
-
             socket.close();
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
+    private void getImages() {
+        imageSelector.getImageSinceFolder();
+    }
+    private void saveImage() throws IOException {
+        byte[] image = imageSelector.selectImage();
+        outputStream.write(image);
+        outputStream.flush();
+        int response = inputStream.read();
+        if (response == 1) {
+            /*se guardó exitosamente la imagen entonces :D.*/
+            System.out.println("Imagen guardada");
+        } else {
+            /*no se guardó exitosamente la imagen entonces :C.*/
+            System.err.println("Imagen no guardada");
+        }
+    }
     public static void main(String[] args) {
         new Client();
     }
