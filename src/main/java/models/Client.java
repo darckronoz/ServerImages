@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 public class Client {
     private static final String IPADDRESS = "localhost";
+    private static final String IMAGES_PATH = "D:\\testClient"; /*Pasar tambien por la interfaz*/
     private static final int PORT = 55555;
     public static final String ERROR_MESSAGE = "F";
     private final InputStream inputStream;
@@ -40,8 +41,15 @@ public class Client {
 
     }
 
-    private void getImages() {
-        imageSelector.getImageSinceFolder();
+    private void getImages() throws IOException {
+        int images = inputStream.read(); //Cantidad de imagenes
+        System.out.println(images);
+        byte[][] imagesList = new byte[images][];
+        for (int i = 0; i < images; i++) {
+            imagesList[i] = new byte[229600];
+            int image = inputStream.read(imagesList[i]);
+            ImageProcessor.saveImage(IMAGES_PATH, imagesList[i]);
+        }
     }
     private void saveImage() throws IOException {
         byte[] image = imageSelector.selectImage();

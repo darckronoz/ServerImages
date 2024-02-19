@@ -1,5 +1,6 @@
 package models;
 
+import java.awt.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,7 +8,7 @@ import java.net.Socket;
 public class Server {
 
     private static boolean status = true;
-    private static final String IMAGES_PATH = "D:\\test";
+    private static final String IMAGES_PATH = "D:\\test"; /*Pasar tambien por la interfaz*/
 
     public Server(int port) {
         try {
@@ -52,14 +53,21 @@ public class Server {
             }
         }
         public void getImages() throws IOException {
-
+            int images = ImageProcessor.getImagesCount(IMAGES_PATH);
+            System.out.println(images);
+            out.write(images); //Enviar cantidad de imagenes.
+            byte[][] imagesList = ImageProcessor.getImagesList(IMAGES_PATH);
+            for (int i = 0; i < images; i++) {
+                byte[] image = imagesList[i];
+                out.write(image);
+                out.flush();
+            }
         }
         /*lee un array de bytes y lo envia al procesador de imagenes para que lo guarde
-        * la imagen puede ser de 360*360 no he probado mas tamaños
         * retorna 1 si se guardó correctamente
         * retorna 0 si hubo un error al guardar*/
         public void saveImage() throws IOException {
-            byte[] imageBytes = new byte[129600];
+            byte[] imageBytes = new byte[229600];
             int image = in.read(imageBytes);
             try{
                 if(ImageProcessor.saveImage(IMAGES_PATH, imageBytes)) {
